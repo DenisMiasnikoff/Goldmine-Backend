@@ -2,8 +2,8 @@ import { Request, Response, NextFunction } from 'express';
 import jwt, { SignOptions } from 'jsonwebtoken';
 import { promisify } from 'util';
 import crypto from 'crypto';
-import User from './../models/userModel';
-import sendEmail from './../utils/email';
+import User from "../models/userModel";
+import sendEmail from "../utils/email";
 
 // Shape of decoded JWT token
 interface JwtPayload {
@@ -30,7 +30,7 @@ export const signup = async (req: Request, res: Response, next: NextFunction): P
     });
 
     const token = signToken(newUser._id.toString());
-    newUser.password = undefined;
+    (newUser as any).password = undefined;
 
     res.status(201).json({
       status: 'success',
@@ -125,7 +125,7 @@ export const protect = async (req: Request, res: Response, next: NextFunction): 
 
 export const restrictTo = (...roles: string[]) => {
   return (req: Request, res: Response, next: NextFunction): void => {
-    if (!roles.includes(req.user?.role)) {
+    if (!req.user?.role || !roles.includes(req.user.role)) {
       res.status(403).json({
         status: 'fail',
         message: 'You do not have permission to perform this action'
@@ -183,7 +183,7 @@ export const resetPassword = async (req: Request, res: Response, next: NextFunct
   try {
     const hashedToken = crypto
       .createHash('sha256')
-      .update(req.params.token)
+      .update(req.params.token as string)
       .digest('hex');
 
     const user = await User.findOne({

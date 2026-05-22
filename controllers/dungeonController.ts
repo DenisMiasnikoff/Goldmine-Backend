@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 
-import Dungeon from './../models/dungeonModel';
+import Dungeon from "../models/dungeonModel"
 
 export const getAllDungeons = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
@@ -23,7 +23,7 @@ export const createDungeon = async (req: Request, res: Response, next: NextFunct
       description: req.body.description,
       dungPicture: req.body.dungPicture,
       dungBanner: req.body.dungBanner,
-      moderators: [req.user?.id]
+      moderators: [req.user!.id]
     });
 
     res.status(201).json({

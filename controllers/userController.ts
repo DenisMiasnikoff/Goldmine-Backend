@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 
-import User from './../models/userModel';
+import User from "../models/userModel";
 
 const filterObj = (obj: Record<string, unknown>, ...allowedFields: string[]): Record<string, unknown> => {
   const newObj: Record<string, unknown> = {};
@@ -11,7 +11,7 @@ const filterObj = (obj: Record<string, unknown>, ...allowedFields: string[]): Re
 };
 
 export const getMe = (req: Request, res: Response, next: NextFunction): void => {
-  req.params.id = req.user?.id;
+  req.params.id = req.user!.id;
   next();
 };
 

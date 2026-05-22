@@ -1,8 +1,8 @@
 import { Request, Response, NextFunction } from 'express';
 
-import Post from './../models/postModel';
+import Post from "../models/postModel";
 
-import User from './../models/userModel';
+import User from "../models/userModel";
 
 interface PostFilter {
   dungeon?: string;
@@ -11,7 +11,7 @@ interface PostFilter {
 export const getAllPosts = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const filter: PostFilter = {};
-    if (req.params.dungeonId) filter.dungeon = req.params.dungeonId;
+    if (req.params.dungeonId) filter.dungeon = req.params.dungeonId as string;
 
     const posts = await Post.find(filter);
 

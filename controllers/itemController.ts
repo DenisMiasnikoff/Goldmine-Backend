@@ -1,8 +1,8 @@
 import { Request, Response, NextFunction } from 'express';
 
-import Item from './../models/itemModel';
+import Item from "../models/itemModel";
 
-import User from './../models/userModel';
+import User from "../models/userModel";
 
 export const getAllItems = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
