@@ -3,6 +3,7 @@ import { Request, Response, NextFunction } from 'express';
 import Post from "../models/postModel";
 
 import User from "../models/userModel";
+import mongoose from 'mongoose';
 
 interface PostFilter {
   dungeon?: string;
@@ -76,25 +77,51 @@ export const upvotePost = async (req: Request, res: Response, next: NextFunction
       return;
     }
 
-    post.upvotes = post.upvotes + 1;
-    await post.save();
+    const userId = req.user?.id;
 
-    let message = 'Upvoted!';
+    // 1. Guard Clause for TypeScript
+    if (!userId) {
+      res.status(401).json({ message: 'You must be logged in to upvote.' });
+      return;
+    }
 
-    if (post.upvotes % 10 === 0) {
-      const author = await User.findById(post.user);
+    let message = '';
+    const hasUpvoted = post.upvotes.some(id => id.toString() === userId.toString());
 
-      if (author) {
-        author.gems = author.gems + 5;
-        await author.save({ validateBeforeSave: false });
-        message = `Upvoted! This was the ${post.upvotes}th like. Author earned a gemstone! 💎`;
+    if (hasUpvoted) {
+      // 2. UN-UPVOTE
+      post.upvotes = post.upvotes.filter(id => id.toString() !== userId.toString());
+      message = 'Upvote removed';
+    } else {
+      // 3. UPVOTE
+      post.upvotes.push(new mongoose.Types.ObjectId(userId));
+      message = 'Upvoted!';
+
+      // 4. THE GEM MECHANIC
+      const currentVoteCount = post.upvotes.length;
+      if (currentVoteCount > 0 && currentVoteCount % 10 === 0) {
+        const author = await User.findById(post.user);
+
+        if (author) {
+          author.gems = (author.gems || 0) + 5;
+          await author.save({ validateBeforeSave: false });
+          message = `Upvoted! This was the ${currentVoteCount}th like. Author earned 5 gemstones! 💎`;
+        }
       }
     }
 
+    // 5. Save and send response
+    await post.save();
+
     res.status(200).json({
       status: 'success',
-      data: { upvotes: post.upvotes, message }
+      data: {
+        upvotes: post.upvotes.length,
+        message
+      }
     });
+
+  // THIS is the block that got accidentally deleted!
   } catch (err) {
     const error = err as Error;
     res.status(400).json({ status: 'fail', message: error.message });

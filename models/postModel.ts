@@ -6,8 +6,9 @@ export interface IPost extends Document {
   photo: string;
   user: mongoose.Types.ObjectId;
   dungeon: mongoose.Types.ObjectId;
-  upvotes: number;
-  downvotes: number;
+  
+  upvotes: mongoose.Types.ObjectId[]; 
+  downvotes: mongoose.Types.ObjectId[];
   createdAt: Date;
 }
 
@@ -36,14 +37,17 @@ const postSchema = new Schema<IPost>({
     ref: 'Dungeon',
     required: [true, 'A post must belong to its specific Dungeon!']
   },
-  upvotes: {
-    type: Number,
-    default: 0
-  },
-  downvotes: {
-    type: Number,
-    default: 0
-  },
+  
+  // 2. Update the schema to store an array of User references
+  upvotes: [{
+    type: Schema.Types.ObjectId,
+    ref: 'User'
+  }],
+  downvotes: [{
+    type: Schema.Types.ObjectId,
+    ref: 'User'
+  }],
+  
   createdAt: {
     type: Date,
     default: Date.now

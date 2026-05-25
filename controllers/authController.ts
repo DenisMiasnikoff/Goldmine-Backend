@@ -2,8 +2,16 @@ import { Request, Response, NextFunction } from 'express';
 import jwt, { SignOptions } from 'jsonwebtoken';
 import { promisify } from 'util';
 import crypto from 'crypto';
-import User from "../models/userModel";
+import User, { IUser } from "../models/userModel";
 import sendEmail from "../utils/email";
+
+declare global {
+  namespace Express {
+    interface Request {
+      user?: IUser;
+    }
+  }
+}
 
 // Shape of decoded JWT token
 interface JwtPayload {
