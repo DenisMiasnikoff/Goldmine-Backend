@@ -24,6 +24,7 @@ export interface IUser extends Document {
     unlockedFrames: string[];
   };
   inventory: mongoose.Types.ObjectId[];
+  subscriptions: mongoose.Types.ObjectId[];
 }
 
 // 2. Custom methods interface
@@ -97,7 +98,14 @@ const userSchema = new Schema<IUser, UserModel, IUserMethods>({
       ref: 'Item'
     }],
     default: []
-  }
+  },
+subscriptions: {
+  type: [{
+    type: Schema.Types.ObjectId,
+    ref: 'Dungeon'
+  }],
+  default: []
+}
 });
 
 // Pre-save middleware
