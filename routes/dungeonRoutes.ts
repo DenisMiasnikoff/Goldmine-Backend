@@ -11,10 +11,12 @@ router.route('/')
   .get(dungeonController.getAllDungeons)
   .post(authController.protect, dungeonController.createDungeon);
 
-router.route('/:id')
-  .get(dungeonController.getDungeon);
 
 router.get('/my-dungeons', authController.protect, dungeonController.getMyDungeons);
 router.patch('/:id/subscribe', authController.protect, dungeonController.subscribeToDungeon);
+
+router.route('/:id')
+  .get(dungeonController.getDungeon)
+  .patch(authController.protect, dungeonController.updateDungeon);
 
 export default router;

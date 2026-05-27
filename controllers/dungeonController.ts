@@ -28,6 +28,10 @@ export const createDungeon = async (req: Request, res: Response, next: NextFunct
       moderators: [req.user!.id]
     });
 
+      await User.findByIdAndUpdate(req.user!.id, {
+      $push: { subscriptions: newDungeon._id }
+    });
+
     res.status(201).json({
       status: 'success',
       data: { dungeon: newDungeon }
@@ -95,7 +99,13 @@ export const subscribeToDungeon = async (req: Request, res: Response, next: Next
 
 export const getMyDungeons = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
+   
     const user = await User.findById(req.user!.id).populate('subscriptions');
+    
+     const moderatedDungeons = await Dungeon.find({ 
+      moderators: req.user!.id 
+    });
+    
     if (!user) {
       res.status(404).json({ message: 'User not found' });
       return;
@@ -104,6 +114,44 @@ export const getMyDungeons = async (req: Request, res: Response, next: NextFunct
     res.status(200).json({
       status: 'success',
       data: { dungeons: user.subscriptions }
+    });
+  } catch (err) {
+    const error = err as Error;
+    res.status(400).json({ status: 'fail', message: error.message });
+  }
+};
+
+export const updateDungeon = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    const dungeon = await Dungeon.findById(req.params.id);
+
+    if (!dungeon) {
+      res.status(404).json({ message: 'Dungeon not found' });
+      return;
+    }
+
+    // Only moderators can edit
+    const isModerator = dungeon.moderators.some(
+      mod => mod.toString() === req.user!.id
+    );
+
+    if (!isModerator) {
+      res.status(403).json({ message: 'Only moderators can edit this dungeon' });
+      return;
+    }
+
+    const updatedDungeon = await Dungeon.findByIdAndUpdate(
+      req.params.id,
+      {
+        name: req.body.name,
+        description: req.body.description,
+      },
+      { new: true, runValidators: true }
+    );
+
+    res.status(200).json({
+      status: 'success',
+      data: { dungeon: updatedDungeon }
     });
   } catch (err) {
     const error = err as Error;
