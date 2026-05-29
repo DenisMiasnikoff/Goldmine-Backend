@@ -54,6 +54,15 @@ const postSchema = new Schema<IPost>({
   }
 });
 
+
+postSchema.index(
+  { title: 'text', content: 'text' },
+  { 
+    weights: { title: 10, content: 2 }, // Title matches are 5x more important
+    name: "TextSearchIndex" 
+  }
+);
+
 postSchema.pre(/^find/, function(this: Query<IPost[], IPost>) {
   this.populate({
     path: 'user',

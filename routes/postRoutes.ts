@@ -8,6 +8,9 @@ router.route('/')
   .get(postController.getAllPosts)
   .post(authController.protect, postController.createPost);
 
+router.route('/search')
+  .get(postController.searchPosts);
+
 router.route('/:id')
   .get(postController.getPost);
 

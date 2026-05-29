@@ -109,7 +109,7 @@ export const upvotePost = async (req: Request, res: Response, next: NextFunction
 
     const userId = req.user?.id;
 
-    // 1. Guard Clause for TypeScript
+    
     if (!userId) {
       res.status(401).json({ message: 'You must be logged in to upvote.' });
       return;
@@ -119,15 +119,14 @@ export const upvotePost = async (req: Request, res: Response, next: NextFunction
     const hasUpvoted = post.upvotes.some(id => id.toString() === userId.toString());
 
     if (hasUpvoted) {
-      // 2. UN-UPVOTE
+    
       post.upvotes = post.upvotes.filter(id => id.toString() !== userId.toString());
       message = 'Upvote removed';
     } else {
-      // 3. UPVOTE
+    
       post.upvotes.push(new mongoose.Types.ObjectId(userId));
       message = 'Upvoted!';
 
-      // 4. THE GEM MECHANIC
       const currentVoteCount = post.upvotes.length;
       if (currentVoteCount > 0 && currentVoteCount % 10 === 0) {
         const author = await User.findById(post.user);
@@ -140,7 +139,7 @@ export const upvotePost = async (req: Request, res: Response, next: NextFunction
       }
     }
 
-    // 5. Save and send response
+  
     await post.save();
 
     res.status(200).json({
@@ -151,9 +150,40 @@ export const upvotePost = async (req: Request, res: Response, next: NextFunction
       }
     });
 
-  // THIS is the block that got accidentally deleted!
+ 
   } catch (err) {
     const error = err as Error;
     res.status(400).json({ status: 'fail', message: error.message });
+  }
+};
+
+export const searchPosts = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    const { q } = req.query;
+
+    if (!q || typeof q !== 'string') {
+      res.status(400).json({ 
+        status: 'fail', 
+        message: 'Please provide a valid search term in the "q" query parameter.' 
+      });
+      return;
+    }
+
+    
+    const posts = await Post.find(
+      { $text: { $search: q } },
+      { score: { $meta: 'textScore' } } 
+    )
+    .sort({ score: { $meta: 'textScore' } }) 
+    .limit(20); 
+
+    res.status(200).json({
+      status: 'success',
+      results: posts.length,
+      data: { posts }
+    });
+  } catch (err) {
+    const error = err as Error;
+    res.status(500).json({ status: 'fail', message: error.message });
   }
 };
