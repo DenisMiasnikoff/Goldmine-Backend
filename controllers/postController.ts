@@ -14,7 +14,37 @@ export const getAllPosts = async (req: Request, res: Response, next: NextFunctio
     const filter: PostFilter = {};
     if (req.params.dungeonId) filter.dungeon = req.params.dungeonId as string;
 
-    const posts = await Post.find(filter);
+    const isPopular = req.query.sort === 'popular';
+
+    const sortBy = req.query.sort === 'popular';
+
+    let posts;
+   if (sortBy) {
+     posts = await Post.aggregate([
+    { $addFields: { upvoteCount: { $size: '$upvotes' } } },
+    { $sort: { upvoteCount: -1 } },
+    {
+      $lookup: {
+        from: 'users',
+        localField: 'user',
+        foreignField: '_id',
+        as: 'user'
+      }
+    },
+    { $unwind: '$user' },
+    {
+      $lookup: {
+        from: 'dungeons',
+        localField: 'dungeon',
+        foreignField: '_id',
+        as: 'dungeon'
+      }
+    },
+    { $unwind: '$dungeon' }
+  ]);
+} else {
+  posts = await Post.find(filter).sort({ createdAt: -1 });
+}
 
     res.status(200).json({
       status: 'success',
