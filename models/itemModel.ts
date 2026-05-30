@@ -5,6 +5,8 @@ export interface IItem extends Document {
   price: number;
   description: string;
   image: string;
+  itemType: 'color' | 'frame';
+  value: string;
   createdAt: Date;
 }
 
@@ -31,7 +33,16 @@ const itemSchema = new Schema<IItem>({
     type: Date,
     default: Date.now,
     select: false
-  }
+  },
+  itemType: {
+  type: String,
+  enum: ['color', 'frame'],
+  required: [true, 'Item must have a type']
+  },
+ value: {
+  type: String,
+  required: [true, 'Item must have a value']
+}
 });
 
 const Item = mongoose.model<IItem>('Item', itemSchema);

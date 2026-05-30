@@ -74,3 +74,22 @@ export const deleteMe = async (req: Request, res: Response, next: NextFunction):
     res.status(400).json({ status: 'fail', message: error.message });
   }
 };
+
+export const getUserByUsername = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    const user = await User.findOne({ username: req.params.username }).populate('inventory').select('+createdAt'); ;
+
+    if (!user) {
+      res.status(404).json({ message: 'User not found' });
+      return;
+    }
+
+    res.status(200).json({
+      status: 'success',
+      data: { user }
+    });
+  } catch (err) {
+    const error = err as Error;
+    res.status(404).json({ status: 'fail', message: error.message });
+  }
+};

@@ -1,0 +1,34 @@
+[
+  {
+    "name": "Golden Aura",
+    "price": 50,
+    "description": "A golden color for your profile",
+    "image": "none",
+    "itemType": "color",
+    "value": "#FFD700"
+  },
+  {
+    "name": "Ruby Frame",
+    "price": 75,
+    "description": "A ruby red frame for your avatar",
+    "image": "none",
+    "itemType": "frame",
+    "value": "#B22222"
+  },
+  {
+    "name": "Emerald Frame",
+    "price": 100,
+    "description": "An emerald green frame for your avatar",
+    "image": "none",
+    "itemType": "frame",
+    "value": "#228B22"
+  },
+  {
+    "name": "Ocean Blue",
+    "price": 50,
+    "description": "A cool ocean blue color for your profile",
+    "image": "none",
+    "itemType": "color",
+    "value": "#006994"
+  }
+]
