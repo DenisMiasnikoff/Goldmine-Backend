@@ -93,3 +93,50 @@ export const getUserByUsername = async (req: Request, res: Response, next: NextF
     res.status(404).json({ status: 'fail', message: error.message });
   }
 };
+
+export const equipItem = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    const { itemId } = req.params;
+    
+    const user = await User.findById(req.user!.id).populate('inventory');
+    if (!user) {
+      res.status(404).json({ message: 'User not found' });
+      return;
+    }
+
+    // Check user owns this item
+    const ownsItem = user.inventory.some(
+      (item: any) => item._id.toString() === itemId
+    );
+
+    if (!ownsItem) {
+      res.status(403).json({ message: 'You do not own this item' });
+      return;
+    }
+
+    // Get the item details
+    const item = user.inventory.find(
+      (item: any) => item._id.toString() === itemId
+    ) as any;
+
+    // Only equip color items for now
+    if (item.itemType === 'color') {
+      // Toggle — if already equipped, unequip
+      if (user.activeColor === item.value) {
+        user.activeColor = undefined;
+      } else {
+        user.activeColor = item.value;
+      }
+    }
+
+    await user.save({ validateBeforeSave: false });
+
+    res.status(200).json({
+      status: 'success',
+      data: { activeColor: user.activeColor }
+    });
+  } catch (err) {
+    const error = err as Error;
+    res.status(400).json({ status: 'fail', message: error.message });
+  }
+};

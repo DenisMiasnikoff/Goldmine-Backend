@@ -24,6 +24,7 @@ export interface IUser extends Document {
     unlockedFrames: string[];
   };
   inventory: mongoose.Types.ObjectId[];
+  activeColor?: string;
   subscriptions: mongoose.Types.ObjectId[];
 }
 
@@ -99,13 +100,18 @@ const userSchema = new Schema<IUser, UserModel, IUserMethods>({
     }],
     default: []
   },
+  activeColor: {
+  type: String,
+  default: null
+},
 subscriptions: {
   type: [{
     type: Schema.Types.ObjectId,
     ref: 'Dungeon'
   }],
   default: []
-}
+},
+
 });
 
 // Pre-save middleware

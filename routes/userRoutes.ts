@@ -12,6 +12,7 @@ router.use(authController.protect);
 
 router.get('/me', userController.getMe, userController.getUser);
 router.get('/profile/:username', authController.protect, userController.getUserByUsername);
+router.patch('/equipItem/:itemId', authController.protect, userController.equipItem);
 router.patch('/updateMe', userController.updateMe);
 router.delete('/deleteMe', userController.deleteMe);
 
