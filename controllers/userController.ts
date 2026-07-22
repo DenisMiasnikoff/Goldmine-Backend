@@ -104,7 +104,7 @@ export const equipItem = async (req: Request, res: Response, next: NextFunction)
       return;
     }
 
-    // Check user owns this item
+  
     const ownsItem = user.inventory.some(
       (item: any) => item._id.toString() === itemId
     );
@@ -114,14 +114,14 @@ export const equipItem = async (req: Request, res: Response, next: NextFunction)
       return;
     }
 
-    // Get the item details
+
     const item = user.inventory.find(
       (item: any) => item._id.toString() === itemId
     ) as any;
 
-    // Only equip color items for now
+    
     if (item.itemType === 'color') {
-      // Toggle — if already equipped, unequip
+      
       if (user.activeColor === item.value) {
         user.activeColor = undefined;
       } else {

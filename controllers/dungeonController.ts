@@ -130,7 +130,7 @@ export const updateDungeon = async (req: Request, res: Response, next: NextFunct
       return;
     }
 
-    // Only moderators can edit
+  
     const isModerator = dungeon.moderators.some(
       mod => mod.toString() === req.user!.id
     );

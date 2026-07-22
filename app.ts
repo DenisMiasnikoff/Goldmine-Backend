@@ -10,21 +10,21 @@ import commentRouter from "./routes/commentRoutes";
 
 const app = express();
 
-// Global rate limiter — 100 requests per 15 minutes per IP
+
 const globalLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 100,
   message: { status: 'fail', message: 'Too many requests, please try again later.' }
 });
 
-// Strict limiter for auth routes
+
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 10,
   message: { status: 'fail', message: 'Too many login attempts, please try again later.' }
 });
 
-// Upvote limiter — prevents spam clicking
+
 const upvoteLimiter = rateLimit({
   windowMs: 60 * 1000,
   max: 30,

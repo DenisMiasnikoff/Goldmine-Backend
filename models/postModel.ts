@@ -38,7 +38,7 @@ const postSchema = new Schema<IPost>({
     required: [true, 'A post must belong to its specific Dungeon!']
   },
   
-  // 2. Update the schema to store an array of User references
+  
   upvotes: [{
     type: Schema.Types.ObjectId,
     ref: 'User'
@@ -58,7 +58,7 @@ const postSchema = new Schema<IPost>({
 postSchema.index(
   { title: 'text', content: 'text' },
   { 
-    weights: { title: 10, content: 2 }, // Title matches are 5x more important
+    weights: { title: 10, content: 2 }, 
     name: "TextSearchIndex" 
   }
 );

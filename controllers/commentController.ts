@@ -22,7 +22,7 @@ export const createComment = async (req: Request, res: Response, next: NextFunct
     const newComment = await Comment.create({
       text: req.body.text,
       user: req.user!.id,
-      post: req.params.postId as string  // 👈 add this cast
+      post: req.params.postId as string  
     });
 
     res.status(201).json({

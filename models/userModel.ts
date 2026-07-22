@@ -3,7 +3,7 @@ import validator from 'validator';
 import bcrypt from 'bcryptjs';
 import crypto from 'crypto';
 
-// 1. Document fields interface
+
 export interface IUser extends Document {
   username: string;
   id:string;
@@ -28,14 +28,14 @@ export interface IUser extends Document {
   subscriptions: mongoose.Types.ObjectId[];
 }
 
-// 2. Custom methods interface
+
 interface IUserMethods {
   correctPassword(candidatePassword: string, userPassword: string): Promise<boolean>;
   createPasswordResetToken(): string;
   changedPasswordAfter(JWTTimestamp: number): boolean;
 }
 
-// 3. Combined model type
+
 type UserModel = Model<IUser, {}, IUserMethods>;
 
 const userSchema = new Schema<IUser, UserModel, IUserMethods>({
@@ -114,7 +114,6 @@ subscriptions: {
 
 });
 
-// Pre-save middleware
 userSchema.pre('save', async function(this: IUser) {
   if (!this.isModified('password')) return;
 
@@ -122,12 +121,12 @@ userSchema.pre('save', async function(this: IUser) {
   this.confirmpassword = undefined;
 });
 
-// Pre-find middleware
+
 userSchema.pre(/^find/, function(this: Query<IUser[], IUser>) {
   this.find({ active: { $ne: false } });
 });
 
-// Methods
+
 userSchema.methods.correctPassword = async function(
   candidatePassword: string,
   userPassword: string
